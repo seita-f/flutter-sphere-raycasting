@@ -16,9 +16,9 @@ class Sphere {
   int id = 0;
   
   bool isVisible = true;
-  bool isPhong = true; // Phongシェーディングを適用するかどうかのフラグ
+  bool isPhong = true; 
 
-  Sphere(this.origin, this.radius, this.color, {this.isPhong = false});
+  Sphere(this.origin, this.radius, this.color, {this.isPhong = true});
 
   RayHit? intersect(Ray ray) {
     final oc = ray.origin - origin;
@@ -69,17 +69,17 @@ class Sphere {
       if (isPhong) {
         // Phongシェーディング
         final viewVec = (origin - hit.position).normalized();
-        // final reflectVec = ((2 * hit.normal.dot(lightVec) * hit.normal) - lightVec).normalized();
         final reflectVec = (hit.normal * (2 * hit.normal.dot(lightVec)) - lightVec).normalized();
-        final ambient = 0.1;
+        final ambient = 0.2;
         final diffuse = math.max(hit.normal.dot(lightVec), 0.0);
         final specularStrength = 0.5;
         final shininess = 32.0;
         final specular = math.pow(math.max(viewVec.dot(reflectVec), 0.0), shininess) * specularStrength;
         final lighting = ambient + diffuse + specular;
         return color * lighting;
+
       } else {
-        // Lambertianシェーディング
+        // Lambertian shading for debug
         final cos = lightVec.dot(hit.normal);
         return color * cos;
       }
