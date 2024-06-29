@@ -36,15 +36,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
-  Sphere sphere = Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(1.0, 0.0, 0.0));
-  Color sphereColor = Color(0xFF0000FF);  // 初期値を青色に設定
+
+  // Color sphereColor = Colors.cyan;  // 初期値を青色に設定  
+  // // Vector3 defaultColor = Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804); // blue ish
+  // Sphere sphere = Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804));
+  Vector3 defaultColor = Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804); // blue-ish
+  late Sphere sphere;
+  Color sphereColor = Color.fromRGBO(
+    (0.3137254901960784 * 255).toInt(),
+    (0.6196078431372549 * 255).toInt(),
+    (0.615686274509804 * 255).toInt(),
+    1.0,
+  );
 
   // red, blue, green
   List<Vector3> colors = [Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)];
 
   double radius = 3.0;  // 初期値
   bool isVisible = true;  // 初期値
-  // bool isPhong = false;
+  bool isPhong = true;
 
   int shape_id = 1;
   Color canvasColor = Color(0xFFF5F5F5);
@@ -55,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    sphere = Sphere(Vector3(0.0, 0.0, 10.0), radius, defaultColor);
     // objects.add(Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(1.0, 0.0, 0.0)));
     // Sphere sphere = Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(0.0, 0.0, 0.0));
   }
@@ -71,22 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Size getScreenSize(BuildContext context) {
     return MediaQuery.of(context).size;  
-  }
-
-  // remove chosen sphere
-  void _removeSphere(int id){
-    setState((){
-    });
-  }
-
-  // reset camera angles
-  void _resetCameraAngles() {
-    setState(() {
-    });
-  }
-
-  void _updateImage(){
-    print("do nothing for now\n");
   }
 
   @override
@@ -107,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (sphere.isVisible){
         sphere.draw(pixels, size, canvasColor);
+        print(sphere);
       }
 
       return pixels;
