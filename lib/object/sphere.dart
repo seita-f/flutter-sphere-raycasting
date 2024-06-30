@@ -13,12 +13,14 @@ class Sphere {
   final Vector3 origin;
   final double radius;
   final Vector3 color;
+  final Vector3 lightPos;
+
   int id = 0;
   
   bool isVisible = true;
   bool isPhong = true; 
 
-  Sphere(this.origin, this.radius, this.color, {this.isPhong = true});
+  Sphere(this.origin, this.radius, this.color, this.lightPos, {this.isPhong = true});
 
   RayHit? intersect(Ray ray) {
     final oc = ray.origin - origin;
@@ -61,11 +63,12 @@ class Sphere {
 
     final ray = Ray(origin, dir.normalized());
 
-    final light = Vector3(0.0, 10.0, 5.0);
+    // final light = Vector3(0.0, 10.0, 5.0);
+    // final light = Vector3(30.0, -80.0, 20.0);
     final hit = intersect(ray);
 
     if (hit != null) {
-      final lightVec = (light - hit.position).normalized();
+      final lightVec = (lightPos - hit.position).normalized();
       if (isPhong) {
         // Phongシェーディング
         final viewVec = (origin - hit.position).normalized();
