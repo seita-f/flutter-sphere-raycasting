@@ -36,11 +36,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
-
   // Color sphereColor = Colors.cyan;  // 初期値を青色に設定  
   // // Vector3 defaultColor = Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804); // blue ish
   // Sphere sphere = Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804));
   Vector3 defaultColor = Vector3(0.3137254901960784, 0.6196078431372549, 0.615686274509804); // blue-ish
+  Vector3 defaultLightPos = Vector3(30.0, -80.0, 20.0);
+
   late Sphere sphere;
   Color sphereColor = Color.fromRGBO(
     (0.3137254901960784 * 255).toInt(),
@@ -61,11 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Sphere> sphereList = [];
   List<Sphere> objects = [];
 
-  
   @override
   void initState() {
     super.initState();
-    sphere = Sphere(Vector3(0.0, 0.0, 10.0), radius, defaultColor);
+    sphere = Sphere(Vector3(0.0, 0.0, 10.0), radius, defaultColor, defaultLightPos);
     // objects.add(Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(1.0, 0.0, 0.0)));
     // Sphere sphere = Sphere(Vector3(0.0, 0.0, 10.0), 3.0, Vector3(0.0, 0.0, 0.0));
   }
@@ -172,16 +172,25 @@ class _MyHomePageState extends State<MyHomePage> {
     //           padding: EdgeInsets.all(8.0),
     //           color: Colors.white,
     //           child: Column(
+
     //             children: [
-    //               Text('Camera', style: TextStyle(fontWeight: FontWeight.bold)),
+    //               Text('Light', style: TextStyle(fontWeight: FontWeight.bold)),
     //               // X-axis slider
+    //               // value: sphere.origin.x,
+    //               //   min: -10,
+    //               //   max: 10,
+    //               //   onChanged: (value) {
+    //               //     setState(() {
+    //               //       sphere = Sphere(Vector3(value, sphere.origin.y, sphere.origin.z), sphere.radius, sphere.color, isPhong: sphere.isPhong);
+    //               //     });
+    //               //   },
     //               Row(
     //                 children: [
-    //                   Text('Zoom: '), 
+    //                   Text('X: '), 
     //                   Expanded(
     //                     child: SliderWidget(
     //                       // value: _camera.zoom,
-    //                       label: 'Zoom', 
+    //                       label: 'X:', 
     //                       initialValue: 90,
     //                       minValue: 1,
     //                       maxValue: 180,
@@ -196,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //               // Y-axis slider
     //               Row(
     //                 children: [
-    //                   Text('Height: '), 
+    //                   Text('Y: '), 
     //                   Expanded(
     //                     child: SliderWidget(
     //                       label: 'Camera Y', 
@@ -215,7 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //               // Z-axis slider
     //               Row(
     //                 children: [
-    //                   Text('Yaw: '), 
+    //                   Text('Z: '), 
     //                   Expanded(
     //                     child: SliderWidget(
     //                       label: 'Camera Z', 
@@ -295,6 +304,59 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
               child: Column(
                 children: [
+                  Text('Light Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Text('X Position: '),
+                      Expanded(
+                        child: Slider(
+                          value: sphere.lightPos.x,
+                          min: -360,
+                          max: 360,
+                          onChanged: (value) {
+                            setState(() {
+                              sphere = Sphere(sphere.origin, sphere.radius, sphere.color, Vector3(value, sphere.lightPos.y, sphere.lightPos.z) , isPhong: sphere.isPhong);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Y Position: '),
+                      Expanded(
+                        child: Slider(
+                          value: sphere.lightPos.y,
+                          min: -360,
+                          max: 360,
+                          onChanged: (value) {
+                            setState(() {
+                              sphere = Sphere(sphere.origin, sphere.radius, sphere.color, Vector3(sphere.lightPos.x, value, sphere.lightPos.z), isPhong: sphere.isPhong);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Z Position: '),
+                      Expanded(
+                        child: Slider(
+                          value: sphere.lightPos.z,
+                          min: -360,
+                          max: 360,
+                          onChanged: (value) {
+                            setState(() {
+                              sphere = Sphere(sphere.origin, sphere.radius, sphere.color, Vector3(sphere.lightPos.x, sphere.lightPos.y, value) , isPhong: sphere.isPhong);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 16),
                   Text('Sphere Settings', style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 16),
@@ -325,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onColorChanged: (Color color) {
                                       setState(() {
                                         sphereColor = color;
-                                        sphere = Sphere(sphere.origin, sphere.radius, Vector3(color.red / 255, color.green / 255, color.blue / 255), isPhong: sphere.isPhong);
+                                        sphere = Sphere(sphere.origin, sphere.radius, Vector3(color.red / 255, color.green / 255, color.blue / 255), sphere.lightPos, isPhong: sphere.isPhong);
                                       });
                                     },
                                     showLabel: true,
@@ -360,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           onChanged: (value) {
                             setState(() {
                               radius = value;
-                              sphere = Sphere(Vector3(sphere.origin.x, sphere.origin.y, sphere.origin.z), radius, sphere.color, isPhong: sphere.isPhong);
+                              sphere = Sphere(Vector3(sphere.origin.x, sphere.origin.y, sphere.origin.z), radius, sphere.color, sphere.lightPos, isPhong: sphere.isPhong);
                             });
                           },
                         ),
@@ -377,7 +439,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           max: 10,
                           onChanged: (value) {
                             setState(() {
-                              sphere = Sphere(Vector3(value, sphere.origin.y, sphere.origin.z), sphere.radius, sphere.color, isPhong: sphere.isPhong);
+                              sphere = Sphere(Vector3(value, sphere.origin.y, sphere.origin.z), sphere.radius, sphere.color, sphere.lightPos, isPhong: sphere.isPhong);
                             });
                           },
                         ),
@@ -394,7 +456,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           max: 10,
                           onChanged: (value) {
                             setState(() {
-                              sphere = Sphere(Vector3(sphere.origin.x, value, sphere.origin.z), sphere.radius, sphere.color, isPhong: sphere.isPhong);
+                              sphere = Sphere(Vector3(sphere.origin.x, value, sphere.origin.z), sphere.radius, sphere.color, sphere.lightPos, isPhong: sphere.isPhong);
                             });
                           },
                         ),
@@ -409,7 +471,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onChanged: (value) {
                           setState(() {
                             isVisible = value;
-                            sphere = Sphere(sphere.origin, sphere.radius, sphere.color, isPhong: sphere.isPhong);
+                            sphere = Sphere(sphere.origin, sphere.radius, sphere.color, sphere.lightPos, isPhong: sphere.isPhong);
                             sphere.isVisible = isVisible;
                           });
                         },
