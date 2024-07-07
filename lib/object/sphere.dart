@@ -36,15 +36,32 @@ class Sphere {
     return RayHit(position, normal);
   }
 
+  int color_threshold(int color){
+    if (color > 255){
+      return 255;
+    } 
+    else if (color < 0){
+      return 0;
+    }
+    return color;
+  }
+
   void draw(Uint8List pixels, ui.Size size, ui.Color canvasColor) {
     for (int y = 0; y < size.height.toInt(); y++) {
       for (int x = 0; x < size.width.toInt(); x++) {
         final uv = ui.Offset(x / size.width, y / size.height);
         final color = render(uv, 0.0, canvasColor);
         final int index = (y * size.width.toInt() + x) * 4; 
-        pixels[index] = (color.x * 255).toInt();
-        pixels[index + 1] = (color.y * 255).toInt();
-        pixels[index + 2] = (color.z * 255).toInt();
+
+        
+        int x_color = color_threshold((color.x * 255).toInt());
+        int y_color = color_threshold((color.y * 255).toInt());
+        int z_color = color_threshold((color.z * 255).toInt());
+
+        pixels[index] = x_color;
+        pixels[index + 1] = y_color;
+        pixels[index + 2] = z_color;
+
         pixels[index + 3] = 255;  // アルファチャンネル
       }
     }
